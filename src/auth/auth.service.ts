@@ -27,14 +27,23 @@ export class AuthService {
       password: input.password,
     });
     if (error) {
-      if (error.code === 'user_already_exists') {
-        throw new ConflictException(messages.auth.emailAlreadyRegistered);
-      }
-      if (error.status === 401 || error.status === 403) {
-        throw new BadGatewayException(messages.errors.upstreamError);
-      }
-      this.throwAuthError(error, messages.errors.upstreamError);
-    }
+  console.error('Supabase Registration Error:', {
+    message: error.message,
+    status: error.status,
+    code: error.code,
+  });
+
+  if (error.code === 'user_already_exists') {
+    throw new ConflictException(
+      messages.auth.emailAlreadyRegistered,
+    );
+  }
+
+  this.throwAuthError(
+    error,
+    messages.errors.upstreamError,
+  );
+}
     if (!data.user)
       throw new BadGatewayException(messages.errors.upstreamError);
     return this.toSession(data.user, data.session);
@@ -47,7 +56,14 @@ export class AuthService {
         email: input.email,
         password: input.password,
       });
-    if (error) this.throwAuthError(error, messages.auth.invalidCredentials);
+    if (error) {
+      console.error('Supabase Login Error:', {
+        message: error.message,
+        status: error.status,
+        code: error.code,
+      });
+      this.throwAuthError(error, messages.auth.invalidCredentials);
+    }
     if (!data.user) {
       throw new UnauthorizedException(messages.auth.invalidCredentials);
     }
