@@ -20,7 +20,8 @@
     "positiveNumber": "Field '{field}' must be a positive number.",
     "stringMinLength": "Field '{field}' must contain at least {min} characters.",
     "stringMaxLength": "Field '{field}' must not exceed {max} characters.",
-    "invalidDate": "Field '{field}' must be a valid ISO 8601 date string."
+    "invalidDate": "Field '{field}' must be a valid ISO 8601 date string.",
+    "invalidInput": "The submitted value is invalid."
   },
   "auth": {
     "invalidCredentials": "The email or password provided is incorrect.",
@@ -28,7 +29,14 @@
     "tokenInvalid": "The provided authentication token is invalid or malformed.",
     "insufficientPermissions": "Your current role does not have permission for this endpoint.",
     "accountLocked": "This account has been temporarily locked for security.",
-    "sessionTerminated": "Your session has ended. Please sign in again."
+    "sessionTerminated": "Your session has ended. Please sign in again.",
+    "emailAlreadyRegistered": "An account with this email already exists.",
+    "passwordResetRequested": "If an account exists for this email, password reset instructions will be sent.",
+    "passwordUpdated": "Your password has been updated.",
+    "invalidToken": "The provided authentication token is invalid or malformed."
+  },
+  "tasks": {
+    "notFound": "Task not found."
   },
   "common": {
     "operationSuccessful": "Operation completed successfully.",
@@ -45,4 +53,3 @@
     "memoryUsageNormal": "Memory utilization is within acceptable bounds."
   }
 }
-

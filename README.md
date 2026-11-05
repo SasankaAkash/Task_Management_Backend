@@ -55,3 +55,20 @@ pnpm typecheck && pnpm lint && pnpm test && pnpm test:e2e && pnpm build
 ```
 
 Run this quality gate locally before opening pull requests to ensure code quality and build stability.
+
+## Supabase setup
+
+Copy `.env.example` to `.env` and set `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`.
+Enable email/password authentication in Supabase and configure the allowed redirect
+URL for password recovery. Enable Row Level Security on `tasks` with policies that
+restrict select, insert, update and delete to rows where `auth.uid() = user_id`.
+Ensure Supabase Auth creates a matching `profiles` row on signup because the task
+table references that profile. The API also scopes every task query to the verified
+user ID. Supabase Auth rate limits apply to proxied authentication operations.
+
+## API
+
+Authentication routes are under `/api/v1/auth`: register, login, refresh, logout,
+password-reset and password-reset/confirm. Task routes are under `/api/v1/tasks`;
+send the Supabase access token as a bearer token. `GET /api/v1/tasks` supports
+`status`, `search`, `sort=asc|desc`, `page` and `limit` (maximum 100).

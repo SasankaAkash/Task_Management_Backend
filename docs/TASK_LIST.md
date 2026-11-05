@@ -46,13 +46,14 @@ Tracks end-to-end implementation progress. Source documents: [PROJECT_PLAN.md](.
 
 ## Phase 2: Authentication and Authorization (`src/auth/`)
 
-- [ ] **P2.1 Authentication**
-  - [ ] Password hashing (argon2id or bcrypt), login, token/session issuance, refresh and logout.
-- [ ] **P2.2 Account flows**
-  - [ ] Registration, password reset (if in scope), rate limiting on auth endpoints.
-- [ ] **P2.3 Authorization**
-  - [ ] Global auth guard (private by default), `@Public()`, `@Roles()`, `@CurrentUser()`.
-  - [ ] Ownership checks in services; test that user A cannot read user B data.
+- [x] **P2.1 Authentication**
+  - [x] Supabase-managed password handling, login, token/session issuance, refresh and logout.
+- [~] **P2.2 Account flows**
+  - [x] Registration and password reset flow.
+  - [ ] Confirm provider rate limits are appropriate for production auth traffic.
+- [x] **P2.3 Authorization**
+  - [x] Global auth guard (private by default), `@Public()`, `@CurrentUser()`.
+  - [x] Ownership checks in repositories; test that user A cannot read user B data.
 - [ ] **P2.4 Seed data**
   - [ ] Seed script for a demo user and sample data (development only).
 
@@ -69,15 +70,21 @@ Tracks end-to-end implementation progress. Source documents: [PROJECT_PLAN.md](.
 
 > Copy this block for every feature from `PROJECT_PLAN.md` section 6.
 
-- [ ] **P4.1 [Module]: data layer**
+- [x] **P4.1 Task management API**
+  - [x] Create, list, retrieve, update, complete/pending and delete tasks.
+  - [x] Filter by status, search by title, sort by creation date and paginate.
+  - [x] Scope every Supabase query and mutation to the authenticated user.
+  - [x] Add unit and e2e coverage for validation and authorization.
+
+- [ ] **P4.x [Module]: data layer**
   - [ ] Zod schemas (`create`, `update`, `listQuery`) and DTOs.
   - [ ] Drizzle table and migration (owner column, indexes on foreign keys).
   - [ ] Repository and service with ownership checks.
   - [ ] Unit and integration tests.
-- [ ] **P4.2 [Module]: API**
+- [ ] **P4.y [Module]: API**
   - [ ] Controller, module wiring, OpenAPI decorators, roles.
   - [ ] e2e tests for success, validation failure, forbidden and not found.
-- [ ] **P4.3 [Module]: verification**
+- [ ] **P4.z [Module]: verification**
   - [ ] Acceptance criteria demonstrated; client team notified of contract changes.
 
 ## Phase N+1: Quality Assurance, Security and Release
@@ -109,7 +116,7 @@ Tracks end-to-end implementation progress. Source documents: [PROJECT_PLAN.md](.
 |---|---|---|
 | 0. Discovery | Not started | |
 | 1. Foundation | Not started | |
-| 2. Authentication | Not started | |
+| 2. Authentication | In progress | Auth and authorization implemented; seed data and rate-limit verification remain |
 | 3. Platform services | Not started | |
-| 4 to N. Features | Not started | |
+| 4 to N. Features | In progress | Task management API implemented |
 | N+1. QA and release | Not started | |

@@ -37,11 +37,12 @@ Copy the template at the bottom, use the next number, and set the status. Link t
 
 ## ADR-004: Authentication approach
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-11-04
-- **Context:** [Describe needs: email and password, OAuth, API keys, roles, token lifetime, mobile and web clients.]
-- **Decision:** [JWT access + refresh tokens / cookie sessions / managed provider]. Behind `AuthModule` so the mechanism can be swapped.
-- **Consequences:** [Trade-offs, revocation strategy, security responsibilities.]
+- **Context:** The API serves browser and mobile clients and needs registration, password login, password recovery, revocable sessions and authenticated access to user-owned tasks.
+- **Decision:** Use Supabase Auth email/password flows through `@supabase/supabase-js`. Clients send Supabase access tokens as bearer credentials; refresh tokens are rotated through the refresh endpoint and accepted by logout for session revocation.
+- **Consequences:** Supabase owns password hashing, email recovery and token lifecycle. The API validates access tokens with Supabase for protected requests and does not store passwords or session state. Email confirmation and password-reset redirect URLs must be configured in Supabase.
+- **Alternatives considered:** Custom password/JWT storage would duplicate Supabase Auth and increase credential-handling risk; cookie sessions are not the shared browser/mobile contract.
 
 ## ADR-005: Hosting, database and queue provider
 
@@ -53,11 +54,20 @@ Copy the template at the bottom, use the next number, and set the status. Link t
 
 ## ADR-006: Tenancy and data ownership
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-11-04
-- **Context:** [Single-tenant, multi-tenant or per-user ownership.]
-- **Decision:** [Owner column (`user_id` / `tenant_id`) on every user-owned table; every repository query filters by it.]
-- **Consequences:** [Impact on schema, indexes and authorization tests.]
+- **Context:** Tasks are private to the account that created them; the client must not choose ownership.
+- **Decision:** Per-user ownership. Every task query filters by the authenticated Supabase user ID, and writes set `user_id` from that verified identity.
+- **Consequences:** User scoping is enforced in the repository as well as by Supabase Row Level Security policies. Policies on `tasks` must restrict select, insert, update and delete to `auth.uid() = user_id`.
+
+## ADR-007: Supabase task queries
+
+- **Status:** Accepted
+- **Date:** 2026-11-05
+- **Context:** The task API requirements explicitly call for Supabase filtering, search, ordering and pagination, while the repository already integrates with Supabase.
+- **Decision:** Use the authenticated Supabase client and PostgREST for task repository queries rather than introducing a separate database client for this feature.
+- **Consequences:** The repository explicitly scopes every operation to `user_id`, and passes the request's access token to Supabase so database RLS is evaluated as the authenticated user. Supabase remains responsible for task schema and RLS deployment. Zod schemas use a small local Nest pipe because `nestjs-zod` does not declare support for the project's NestJS 12 version.
+- **Alternatives considered:** Prisma/Drizzle access would not fulfill the requested Supabase query behavior; service-role queries would bypass user RLS and are not used.
 
 ---
 

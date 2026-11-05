@@ -21,4 +21,4 @@ It ensures that developers and AI agents can instantly identify existing work, u
 | Branch | Status | Target | Created / Updated | Description & Scope | PR Link | History Ref |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | `chore/initial-setup` | `Merged` | `dev-test` | 2026-11-04 | Initial project architecture and AI guardrails setup | - | Initial Setup |
-
+| `feature/tasks` | `Active` | `dev-test` | 2026-11-05 | Supabase authentication and user-owned task CRUD/query API | - | Current work |

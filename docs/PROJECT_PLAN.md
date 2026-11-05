@@ -45,19 +45,25 @@
 
 ## 6. Core Features
 
-### 6.1 [Feature / module name]
+### 6.1 Authentication
 
-- **User value:** [why it matters]
-- **Behavior:** [what it does]
-- **Endpoints:** [list of `METHOD /api/v1/path`]
+- **User value:** Users can securely manage their own task data from web and mobile clients.
+- **Behavior:** Supabase Auth handles email/password registration, login, refresh, logout and password recovery. Protected API routes verify bearer tokens.
+- **Endpoints:** `POST /api/v1/auth/register`, `/login`, `/refresh`, `/logout`, `/password-reset`, `/password-reset/confirm`
 - **Acceptance criteria:**
-  - [ ] [Given / when / then statement]
-  - [ ] [Given / when / then statement]
-- **Priority:** Must | Should | Could
+  - [x] Valid credentials establish a session; invalid credentials are rejected.
+  - [x] Password reset can be requested without exposing whether an email is registered, and the password can be updated with the recovery session.
+- **Priority:** Must
 
-### 6.2 [Feature / module name]
+### 6.2 Task management
 
-[Repeat the structure above for each feature.]
+- **User value:** A signed-in user can manage and find their tasks.
+- **Behavior:** Create, list, retrieve, update, complete/pending and delete tasks. List queries support status filtering, title search, creation-date ordering and page/limit pagination.
+- **Endpoints:** `POST /api/v1/tasks`, `GET /api/v1/tasks`, `GET /api/v1/tasks/:id`, `PATCH /api/v1/tasks/:id`, `DELETE /api/v1/tasks/:id`
+- **Acceptance criteria:**
+  - [x] Every task read and mutation is restricted to the authenticated owner.
+  - [x] List results apply validated filters, stable creation-date ordering and pagination.
+- **Priority:** Must
 
 ## 7. Domain Model
 
@@ -76,8 +82,8 @@
 |---|---|---|
 | Framework | NestJS + TypeScript | HTTP API and modules |
 | Database | PostgreSQL [provider] | Persistent data |
-| ORM | Drizzle ORM | Queries and migrations |
-| Validation | Zod (`nestjs-zod`) | DTOs and inferred types |
+| Data access | Supabase Auth and PostgREST (`@supabase/supabase-js`) | Authentication and user-scoped task queries |
+| Validation | Zod 4 with a Nest validation pipe | Request schemas and inferred types |
 | Authentication | [JWT / sessions / provider] | Login and authorization |
 | Queue / cache | [BullMQ + Redis / none in v1] | Background jobs, caching |
 | API docs | OpenAPI (`@nestjs/swagger`) | Contract for clients |
@@ -99,7 +105,7 @@ Controllers (thin)
 Services (business rules)  <-- pure domain engines (no framework imports)
   |
   v
-Repositories --> Drizzle ORM --> PostgreSQL
+Repositories --> authenticated Supabase client --> Supabase PostgreSQL
   |
   +--> integrations/* --> external APIs        jobs/* --> queues
 ```
@@ -110,7 +116,7 @@ Full rules: `AGENTS.md`. Contract rules: `docs/API_RULES.md`.
 
 | Integration | Purpose | Auth method | Docs link | In v1? |
 |---|---|---|---|---|
-| [Name] | [Purpose] | [API key / OAuth] | [URL] | [Yes / No] |
+| Supabase | User authentication and user-scoped task queries | Publishable key + user access token | https://supabase.com/docs | Yes |
 
 ## 9. Non-Functional Requirements
 
@@ -133,8 +139,8 @@ Full rules: `AGENTS.md`. Contract rules: `docs/API_RULES.md`.
 
 ### Included in Version 1
 
-- [Feature]
-- [Feature]
+- Email/password registration, login, session refresh/logout and password recovery.
+- Per-user task CRUD, completion status, filtering, title search, creation-date sorting and pagination.
 
 ### Excluded from Version 1
 
@@ -199,3 +205,4 @@ A user must never be able to read or modify another user's data.
 | Version | Date | Change | Approved by |
 |---|---|---|---|
 | 0.1 | 2026-11-04 | Initial draft | Akash |
+| 0.2 | 2026-11-05 | Defined Supabase authentication and user-owned task API scope | Akash |

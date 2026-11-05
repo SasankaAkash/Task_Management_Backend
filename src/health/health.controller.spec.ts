@@ -1,65 +1,38 @@
-
-import {
-  Controller,
-  Get,
-  ServiceUnavailableException,
-} from '@nestjs/common';
-
+import { jest } from '@jest/globals';
 import { ConfigService } from '@nestjs/config';
+import { HealthController } from './health.controller';
 
-@Controller('health')
-export class HealthController {
-  constructor(
-    private readonly configService: ConfigService,
-  ) {}
+describe('HealthController', () => {
+  const config = {
+    getOrThrow: jest.fn((name: string) =>
+      name === 'SUPABASE_URL'
+        ? 'https://example.supabase.co'
+        : 'test-publishable-key',
+    ),
+  } as unknown as ConfigService;
+  const controller = new HealthController(config);
 
-  @Get()
-  async check() {
-    const supabaseUrl =
-      this.configService.get<string>('SUPABASE_URL');
+  afterEach(() => jest.restoreAllMocks());
 
-    const supabaseKey =
-      this.configService.get<string>(
-        'SUPABASE_PUBLISHABLE_KEY',
+  it('reports the Supabase auth service health', async () => {
+    jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValue(
+        new Response(JSON.stringify({ name: 'auth' }), { status: 200 }),
       );
 
-    if (!supabaseUrl || !supabaseKey) {
-      throw new ServiceUnavailableException(
-        'Supabase configuration is missing',
-      );
-    }
+    await expect(controller.check()).resolves.toMatchObject({
+      status: 'ok',
+      supabase: 'connected',
+      authService: 'auth',
+    });
+  });
 
-    try {
-      const response = await fetch(
-        `${supabaseUrl}/auth/v1/health`,
-        {
-          method: 'GET',
-          headers: {
-            apikey: supabaseKey,
-          },
-        },
-      );
+  it('reports upstream failures without exposing provider details', async () => {
+    jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValue(new Response('private response', { status: 503 }));
 
-      if (!response.ok) {
-        throw new Error(
-          `Supabase returned status ${response.status}`,
-        );
-      }
-
-      const result = await response.json();
-
-      return {
-        status: 'ok',
-        application: 'task-management-api',
-        supabase: 'connected',
-        authService: result.name,
-      };
-    } catch {
-      throw new ServiceUnavailableException({
-        status: 'error',
-        application: 'task-management-api',
-        supabase: 'unavailable',
-      });
-    }
-  }
-}
+    await expect(controller.check()).rejects.toMatchObject({ status: 503 });
+  });
+});

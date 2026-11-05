@@ -20,7 +20,8 @@
     "positiveNumber": "El campo '{field}' debe ser un número positivo.",
     "stringMinLength": "El campo '{field}' debe tener al menos {min} caracteres.",
     "stringMaxLength": "El campo '{field}' no debe exceder {max} caracteres.",
-    "invalidDate": "El campo '{field}' debe ser una fecha ISO 8601 válida."
+    "invalidDate": "El campo '{field}' debe ser una fecha ISO 8601 válida.",
+    "invalidInput": "El valor enviado no es válido."
   },
   "auth": {
     "invalidCredentials": "El correo o la contraseña proporcionados son incorrectos.",
@@ -28,7 +29,14 @@
     "tokenInvalid": "El token de autenticación es inválido o tiene un formato incorrecto.",
     "insufficientPermissions": "Su rol actual no tiene permisos para este endpoint.",
     "accountLocked": "Esta cuenta ha sido bloqueada temporalmente por seguridad.",
-    "sessionTerminated": "Su sesión ha finalizado. Por favor inicie sesión de nuevo."
+    "sessionTerminated": "Su sesión ha finalizado. Por favor inicie sesión de nuevo.",
+    "emailAlreadyRegistered": "Ya existe una cuenta con este correo electrónico.",
+    "passwordResetRequested": "Si existe una cuenta con este correo, se enviarán instrucciones para restablecer la contraseña.",
+    "passwordUpdated": "Su contraseña ha sido actualizada.",
+    "invalidToken": "El token de autenticación es inválido o tiene un formato incorrecto."
+  },
+  "tasks": {
+    "notFound": "No se encontró la tarea."
   },
   "common": {
     "operationSuccessful": "Operación completada con éxito.",
@@ -45,4 +53,3 @@
     "memoryUsageNormal": "El uso de memoria está dentro de los límites aceptables."
   }
 }
-

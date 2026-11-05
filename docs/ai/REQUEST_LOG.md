@@ -31,6 +31,22 @@
 
 <!-- Add new feature entries below (newest first) -->
 
+### [2026-11-05 09:18] Supabase authentication and task management API
+
+- **Task / Goal:** Implement registration, login/logout, password reset and authenticated sessions; add user-owned task CRUD with status, title search, creation-date sorting and pagination.
+- **Summary of Changes:**
+  - Added Supabase Auth routes and a private-by-default bearer-token guard.
+  - Added validated, paginated task endpoints with per-user filters and authenticated Supabase clients.
+  - Added Zod schemas, localization, Supabase setup documentation, and unit/e2e coverage.
+- **Files Modified:**
+  - [auth.controller.ts](../../src/auth/auth.controller.ts)
+  - [auth.service.ts](../../src/auth/auth.service.ts)
+  - [task.controller.ts](../../src/task/task.controller.ts)
+  - [task.repository.ts](../../src/task/task.repository.ts)
+  - [DECISIONS.md](../DECISIONS.md)
+  - [PROJECT_PLAN.md](../PROJECT_PLAN.md)
+- **Learnings & Style Alignment:** Used Supabase Auth and token-scoped PostgREST queries; enforced ownership in each repository operation. Used a local Zod pipe because the current NestJS version is outside `nestjs-zod`'s declared peer range.
+
 ### [2026-10-29 19:30] Centralized Localization, Words, and Error Messages System
 
 - **Task / Goal:** List all words, error messages, and every text in one place with language across all stacks (Next.js, NestJS, Flutter) so developers can easily change language and update text from one place.
