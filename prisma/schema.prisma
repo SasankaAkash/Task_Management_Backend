@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+enum TaskStatus {
+  pending
+  completed
+}
+
+model Profile {
+  id        String   @id @db.Uuid // same value as auth.users.id
+  email     String?
+  fullName  String?  @map("full_name")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  tasks       Task[]
+  attachments TaskAttachment[]
+
+  @@map("profiles")
+}
+
+model Task {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String     @map("user_id") @db.Uuid
+  title       String
+  description String?
+  status      TaskStatus @default(pending)
+  createdAt   DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime   @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user        Profile          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  attachments TaskAttachment[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("tasks")
+}
+
+model TaskAttachment {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  taskId    String   @map("task_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  fileName  String   @map("file_name")
+  filePath  String   @map("file_path")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  task Task    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@index([userId])
+  @@map("task_attachments")
+}
