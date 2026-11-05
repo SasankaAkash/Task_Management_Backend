@@ -84,7 +84,7 @@ Error:
 ## 6. Documentation (OpenAPI)
 
 - Every controller method has `@ApiTags`, `@ApiOperation`, response schemas and error responses declared.
-- DTOs come from Zod (`createZodDto`) so the OpenAPI schema matches validation exactly.
+- DTOs come from Zod (`createZodDto`) so the OpenAPI schema matches validation exactly. When routes use custom Zod pipes or inferred TypeScript types, explicitly declare request bodies with `@ApiBody`, query fields with `@ApiQuery`, and path fields with `@ApiParam`; reflected TypeScript types alone do not describe these inputs.
 - Swagger UI is enabled in development and staging; disabled or protected in production.
 - A contract change updates OpenAPI in the same PR. Generated clients (web/mobile) are regenerated from it.
 

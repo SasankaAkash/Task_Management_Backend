@@ -48,7 +48,7 @@
 ### 6.1 Authentication
 
 - **User value:** Users can securely manage their own task data from web and mobile clients.
-- **Behavior:** Supabase Auth handles email/password registration, login, refresh, logout and password recovery. Protected API routes verify bearer tokens.
+- **Behavior:** Supabase Auth handles email/password registration, login, refresh, logout and password recovery. A database trigger mirrors each registered Auth user into the app's `public.users` table; passwords remain in Supabase Auth. Protected API routes verify bearer tokens.
 - **Endpoints:** `POST /api/v1/auth/register`, `/login`, `/refresh`, `/logout`, `/password-reset`, `/password-reset/confirm`
 - **Acceptance criteria:**
   - [x] Valid credentials establish a session; invalid credentials are rejected.
@@ -206,3 +206,4 @@ A user must never be able to read or modify another user's data.
 |---|---|---|---|
 | 0.1 | 2026-11-04 | Initial draft | Akash |
 | 0.2 | 2026-11-05 | Defined Supabase authentication and user-owned task API scope | Akash |
+| 0.3 | 2026-11-05 | Added public user synchronization on Supabase Auth registration | Akash |

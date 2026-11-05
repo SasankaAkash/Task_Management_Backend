@@ -69,6 +69,15 @@ Copy the template at the bottom, use the next number, and set the status. Link t
 - **Consequences:** The repository explicitly scopes every operation to `user_id`, and passes the request's access token to Supabase so database RLS is evaluated as the authenticated user. Supabase remains responsible for task schema and RLS deployment. Zod schemas use a small local Nest pipe because `nestjs-zod` does not declare support for the project's NestJS 12 version.
 - **Alternatives considered:** Prisma/Drizzle access would not fulfill the requested Supabase query behavior; service-role queries would bypass user RLS and are not used.
 
+## ADR-008: Supabase user profile synchronization
+
+- **Status:** Accepted
+- **Date:** 2026-11-05
+- **Context:** Tasks reference a public user row, but Supabase Auth creates identities in `auth.users` and does not automatically create application rows.
+- **Decision:** Rename the application table from `profiles` to `users` and use a database trigger on `auth.users` inserts to create the matching public row. Supabase Auth remains the sole owner of passwords and credentials.
+- **Consequences:** Registration creates the user row atomically with the Auth identity, avoiding a separate API write and partial-registration state. Existing Auth users are backfilled during migration. Row Level Security limits public user reads to the matching authenticated identity.
+- **Alternatives considered:** Storing passwords in `public.users` duplicates credential storage and bypasses Supabase Auth; creating the row in a second API call can leave a registered identity without the task-owner row.
+
 ---
 
 ## Template

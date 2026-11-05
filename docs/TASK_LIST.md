@@ -49,7 +49,7 @@ Tracks end-to-end implementation progress. Source documents: [PROJECT_PLAN.md](.
 - [x] **P2.1 Authentication**
   - [x] Supabase-managed password handling, login, token/session issuance, refresh and logout.
 - [~] **P2.2 Account flows**
-  - [x] Registration and password reset flow.
+  - [x] Registration, public user-row synchronization and password reset flow.
   - [ ] Confirm provider rate limits are appropriate for production auth traffic.
 - [x] **P2.3 Authorization**
   - [x] Global auth guard (private by default), `@Public()`, `@CurrentUser()`.

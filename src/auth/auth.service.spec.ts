@@ -84,6 +84,26 @@ describe('AuthService', () => {
     ).rejects.toMatchObject({ status: 401 });
   });
 
+  it('treats a Supabase signup authorization failure as an upstream error', async () => {
+    const error = Object.assign(new Error('Invalid API key'), {
+      status: 401,
+      code: 'invalid_api_key',
+    }) as AuthError;
+    const auth = {
+      signUp: jest.fn(async () => ({
+        data: { user: null, session: null },
+        error,
+      })),
+    };
+
+    await expect(
+      createService(auth).register({
+        email: 'person@example.com',
+        password: 'strong-password',
+      }),
+    ).rejects.toMatchObject({ status: 502 });
+  });
+
   it('returns the same password-reset response for registered addresses', async () => {
     const auth = {
       resetPasswordForEmail: jest.fn(async () => ({ error: null })),

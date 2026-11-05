@@ -30,6 +30,9 @@ export class AuthService {
       if (error.code === 'user_already_exists') {
         throw new ConflictException(messages.auth.emailAlreadyRegistered);
       }
+      if (error.status === 401 || error.status === 403) {
+        throw new BadGatewayException(messages.errors.upstreamError);
+      }
       this.throwAuthError(error, messages.errors.upstreamError);
     }
     if (!data.user)

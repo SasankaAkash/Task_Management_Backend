@@ -31,6 +31,21 @@
 
 <!-- Add new feature entries below (newest first) -->
 
+### [2026-11-05 15:13] Synchronize Auth registrations to users table
+
+- **Task / Goal:** Replace the app's `profiles` table/model with `users` and make registration create its corresponding public user row.
+- **Summary of Changes:**
+  - Renamed the Prisma model mapping to `users` and added a migration that preserves existing rows and foreign keys.
+  - Added an Auth database trigger and backfill so registration keeps `auth.users` and `public.users` synchronized.
+  - Kept passwords exclusively in Supabase Auth and protected public user reads with RLS.
+- **Files Modified:**
+  - [README.md](../../README.md)
+  - [schema.prisma](../../prisma/schema.prisma)
+  - [migration.sql](../../prisma/migrations/20261105094300_rename_profiles_to_users/migration.sql)
+  - [app.e2e-spec.ts](../../test/app.e2e-spec.ts)
+  - [DECISIONS.md](../DECISIONS.md)
+- **Learnings & Style Alignment:** Treat Supabase Auth as the credential store; the app-facing users table contains identity/profile data only.
+
 ### [2026-11-05 09:18] Supabase authentication and task management API
 
 - **Task / Goal:** Implement registration, login/logout, password reset and authenticated sessions; add user-owned task CRUD with status, title search, creation-date sorting and pagination.
@@ -73,7 +88,20 @@
 
 <!-- Add new bugfix entries below (newest first) -->
 
-_No bugfix requests logged yet._
+### [2026-11-05 16:35] Repair user-table migration and registration diagnostics
+
+- **Task / Goal:** Remove the incomplete Prisma migration directory, synchronize the Prisma `User` model with Supabase, and investigate registration failures.
+- **Summary of Changes:**
+  - Removed only the empty migration directory and applied the guarded profile-to-users migration plus the generated constraint rename.
+  - Verified the migration status, live `public.users` table, absence of `public.profiles`, Auth trigger, and expected trigger columns.
+  - Confirmed the configured Supabase URL/key shape and `.env` gitignore entry without printing secrets.
+  - Removed temporary signup error logging after the controlled Auth endpoint check could not complete from this environment.
+- **Files Modified:**
+  - [schema.prisma](../../prisma/schema.prisma)
+  - [migration.sql](../../prisma/migrations/20261105094300_rename_profiles_to_users/migration.sql)
+  - [migration.sql](../../prisma/migrations/20261105110919_update_schema/migration.sql)
+  - [auth.service.ts](../../src/auth/auth.service.ts)
+- **Learnings & Style Alignment:** Keep Auth error diagnostics temporary and never print environment secrets. Migration status and table/trigger checks are read-only unless explicitly applying a pending migration.
 
 ---
 

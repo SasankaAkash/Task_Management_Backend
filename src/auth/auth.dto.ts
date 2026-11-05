@@ -1,4 +1,49 @@
 import { z } from 'zod';
+import type { SchemaObject } from '@nestjs/swagger';
+
+export const credentialsOpenApiSchema: SchemaObject = {
+  type: 'object',
+  required: ['email', 'password'],
+  properties: {
+    email: {
+      type: 'string',
+      format: 'email',
+      maxLength: 254,
+      example: 'person@example.com',
+    },
+    password: { type: 'string', minLength: 8, maxLength: 128 },
+  },
+};
+
+export const emailOpenApiSchema: SchemaObject = {
+  type: 'object',
+  required: ['email'],
+  properties: {
+    email: {
+      type: 'string',
+      format: 'email',
+      maxLength: 254,
+      example: 'person@example.com',
+    },
+  },
+};
+
+export const refreshTokenOpenApiSchema: SchemaObject = {
+  type: 'object',
+  required: ['refreshToken'],
+  properties: {
+    refreshToken: { type: 'string', minLength: 1, maxLength: 4096 },
+  },
+};
+
+export const confirmPasswordResetOpenApiSchema: SchemaObject = {
+  type: 'object',
+  required: ['refreshToken', 'newPassword'],
+  properties: {
+    refreshToken: { type: 'string', minLength: 1, maxLength: 4096 },
+    newPassword: { type: 'string', minLength: 8, maxLength: 128 },
+  },
+};
 
 const credentialsSchema = z
   .object({

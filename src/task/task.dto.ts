@@ -1,4 +1,29 @@
 import { z } from 'zod';
+import type { SchemaObject } from '@nestjs/swagger';
+
+export const createTaskOpenApiSchema: SchemaObject = {
+  type: 'object',
+  required: ['title'],
+  properties: {
+    title: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 200,
+      example: 'Plan release',
+    },
+    description: { type: 'string', nullable: true, maxLength: 5000 },
+  },
+};
+
+export const updateTaskOpenApiSchema: SchemaObject = {
+  type: 'object',
+  properties: {
+    title: { type: 'string', minLength: 1, maxLength: 200 },
+    description: { type: 'string', nullable: true, maxLength: 5000 },
+    status: { type: 'string', enum: ['pending', 'completed'] },
+  },
+  minProperties: 1,
+};
 
 const taskStatusSchema = z.enum(['pending', 'completed']);
 

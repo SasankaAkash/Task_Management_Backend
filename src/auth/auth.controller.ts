@@ -1,5 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 import { AuthService } from './auth.service';
 import type {
@@ -9,11 +9,15 @@ import type {
   TokenRefreshInput,
 } from './auth.dto';
 import {
+  confirmPasswordResetOpenApiSchema,
+  credentialsOpenApiSchema,
+  emailOpenApiSchema,
   confirmPasswordResetSchema,
   loginSchema,
   logoutSchema,
   passwordResetRequestSchema,
   registerSchema,
+  refreshTokenOpenApiSchema,
   tokenRefreshSchema,
 } from './auth.dto';
 import { CurrentAccessToken, Public } from './auth.decorators';
@@ -26,6 +30,7 @@ export class AuthController {
   @Public()
   @Post('register')
   @ApiOperation({ summary: 'Register an account' })
+  @ApiBody({ schema: credentialsOpenApiSchema })
   register(
     @Body(new ZodValidationPipe(registerSchema)) body: CredentialsInput,
   ) {
@@ -36,6 +41,7 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Sign in and create a session' })
+  @ApiBody({ schema: credentialsOpenApiSchema })
   login(@Body(new ZodValidationPipe(loginSchema)) body: CredentialsInput) {
     return this.auth.login(body);
   }
@@ -44,6 +50,7 @@ export class AuthController {
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Refresh an authenticated session' })
+  @ApiBody({ schema: refreshTokenOpenApiSchema })
   refresh(
     @Body(new ZodValidationPipe(tokenRefreshSchema)) body: TokenRefreshInput,
   ) {
@@ -54,6 +61,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Revoke the current session' })
+  @ApiBody({ schema: refreshTokenOpenApiSchema })
   logout(
     @CurrentAccessToken() accessToken: string,
     @Body(new ZodValidationPipe(logoutSchema)) body: TokenRefreshInput,
@@ -65,6 +73,7 @@ export class AuthController {
   @Post('password-reset')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Request password reset instructions' })
+  @ApiBody({ schema: emailOpenApiSchema })
   requestPasswordReset(
     @Body(new ZodValidationPipe(passwordResetRequestSchema))
     body: PasswordResetRequestInput,
@@ -76,6 +85,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Set a new password from a recovery session' })
+  @ApiBody({ schema: confirmPasswordResetOpenApiSchema })
   confirmPasswordReset(
     @CurrentAccessToken() accessToken: string,
     @Body(new ZodValidationPipe(confirmPasswordResetSchema))
